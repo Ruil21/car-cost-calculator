@@ -19,7 +19,8 @@ const GROUPS: { title: string; fields: [Key, string, string][] }[] = [
 ];
 
 const PRICE_FIELDS: [keyof Prices, string, string][] = [
-  ['fuel', 'Fuel', '€/L'], ['home', 'Home electricity (standard)', '€/kWh'], ['offPeak', 'Home electricity (off-peak)', '€/kWh'],
+  ['petrol', 'Petrol 95', '€/L'], ['diesel', 'Diesel', '€/L'],
+  ['home', 'Home electricity (standard)', '€/kWh'], ['offPeak', 'Home electricity (off-peak)', '€/kWh'],
   ['ac', 'Public AC (slow)', '€/kWh'], ['dc', 'Public DC (fast)', '€/kWh'],
 ];
 
@@ -32,13 +33,15 @@ export default function App() {
   const [hasHome, setHasHome] = useState(true);
   const [offPeak, setOffPeak] = useState(false);
   const [custom, setCustom] = useState(false);
+  const [fuelType, setFuelType] = useState<'petrol' | 'diesel'>('petrol');
 
+  const info = REGIONS[region];
   const homePrice = offPeak ? prices.offPeak : prices.home;
   const publicPrice = (1 - v.fast / 100) * prices.ac + (v.fast / 100) * prices.dc;
 
   const r = compare(
     { kmPerYear: v.km, highwayShare: v.hw / 100, homeChargeShare: hasHome ? v.home / 100 : 0, years: Math.max(1, v.years) },
-    { fuelPerL: prices.fuel, homeKwh: homePrice, publicKwh: publicPrice },
+    { fuelPerL: prices[fuelType], homeKwh: homePrice, publicKwh: publicPrice },
     { evHighwayUplift: v.evHw / 100, evLoss: v.evLoss / 100, iceUplift: v.iceUp / 100 },
     { price: v.evP, incentive: v.evI, kwhPer100: v.evC, resale: v.evR / 100, maintenance: v.evM, insurance: v.evS, tax: v.evT },
     { price: v.icP, lPer100: v.icC, resale: v.icR / 100, maintenance: v.icM, insurance: v.icS, tax: v.icT },
@@ -115,6 +118,12 @@ export default function App() {
             <p className="sub">Your average charging price: {publicPrice.toFixed(2)} €/kWh. Public charging can be much more expensive than home electricity, so the EV advantage often shrinks without home charging.</p>
           </>
         )}
+
+        <p className="q">4. Which fuel does the combustion car use?</p>
+        <div className="choices">
+          <button className={fuelType === 'petrol' ? 'active' : ''} onClick={() => setFuelType('petrol')}>Petrol<small>{prices.petrol.toFixed(2)} €/L</small></button>
+          <button className={fuelType === 'diesel' ? 'active' : ''} onClick={() => setFuelType('diesel')}>Diesel<small>{prices.diesel.toFixed(2)} €/L</small></button>
+        </div>
       </section>
 
       <section className="inputs">
@@ -134,9 +143,14 @@ export default function App() {
           {PRICE_FIELDS.map(([k, label, unit]) => (
             <label key={k}>{label}<span>{num(prices[k], (n) => setPrices({ ...prices, [k]: n }))} {unit}</span></label>
           ))}
-          <p className="sub">Defaults are ballpark values for the chosen country. Check them against your own bills and local charger prices.</p>
+          <button onClick={() => setPrices(pricesOf(region))}>Reset to default prices</button>
         </div>
       </details>
+
+      <p className="sub">
+        Prices for {info.name}, updated {info.updated}. Sources: {info.sources.join(' | ')}.
+        Electricity uses the regulated benchmark tariff, so if you are on a market tariff, enter your own price above.
+      </p>
     </main>
   );
 }

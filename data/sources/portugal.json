@@ -1,0 +1,21 @@
+{
+  "name": "Portugal",
+  "updated": "2026-10-18",
+  "vat": 0.23,
+  "fuel": {
+    "petrol95": 2.11,
+    "diesel": 2.15,
+    "source": "DGEG average pump prices, week of 12-18 Oct 2026 (precoscombustiveis.dgeg.gov.pt)"
+  },
+  "electricity": {
+    "simple": 0.1654,
+    "offPeak": 0.1087,
+    "octoberAdjustment": 0.005,
+    "source": "ERSE regulated tariff BTN 2026 (before VAT) plus 1 Oct 2026 energy update (assumed same for all periods)"
+  },
+  "publicCharging": {
+    "ac": 0.38,
+    "dc": 0.65,
+    "source": "Estimates: midpoint of typical AC range 0.30-0.45; DC fast median 0.65 (Eleport, Feb 2026). Varies a lot by operator"
+  }
+}
