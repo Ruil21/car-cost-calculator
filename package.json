@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "prices": "node scripts/build-prices.mjs"
+    "prices": "node scripts/build-prices.mjs",
+    "fuel": "node scripts/fetch-fuel.mjs",
+    "update-prices": "node scripts/fetch-fuel.mjs && node scripts/build-prices.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",
