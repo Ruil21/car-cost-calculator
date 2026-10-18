@@ -8,3 +8,15 @@ label { display: flex; justify-content: space-between; align-items: center; gap:
 input { width: 90px; text-align: right; }
 label > span { white-space: nowrap; flex-shrink: 0; }
 input { width: 80px; }
+.situation { margin-bottom: 16px; }
+.q { font-weight: 600; margin: 14px 0 6px; }
+select { padding: 6px 8px; font: inherit; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choices button { flex: 1 1 170px; text-align: left; padding: 10px 12px; border: 1px solid #8886; border-radius: 10px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.choices button small { display: block; opacity: .65; font-size: 12px; }
+.choices button.active { border-color: #2f5bea; box-shadow: 0 0 0 2px #2f5bea55; }
+.sub { font-size: 13px; opacity: .7; margin: 4px 0 0; }
+.check { justify-content: flex-start; }
+.check input { width: auto; }
+details { margin-top: 12px; }
+summary { cursor: pointer; margin-bottom: 8px; }
