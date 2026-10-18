@@ -5,7 +5,7 @@ export interface Car {
   price: number; resale: number; // resale = fraction of price kept after the period
   maintenance: number; insurance: number; tax: number; // per year
 }
-export interface Ev extends Car { incentive: number; kwhPer100: number }
+export interface Ev extends Car { incentive: number; kwhPer100: number; wallbox?: number; extraFixedPerYear?: number }
 export interface Ice extends Car { lPer100: number }
 
 export type BreakEven = { kind: 'km'; value: number } | { kind: 'always-ev' } | { kind: 'none' };
@@ -17,7 +17,7 @@ export function compare(u: Usage, p: Prices, a: Assumptions, ev: Ev, ice: Ice) {
 
   const fixed = (c: Car, incentive = 0) =>
     c.price - incentive - c.price * c.resale + u.years * (c.maintenance + c.insurance + c.tax);
-  const evFix = fixed(ev, ev.incentive);
+  const evFix = fixed(ev, ev.incentive) + (ev.wallbox ?? 0) + u.years * (ev.extraFixedPerYear ?? 0);
   const iceFix = fixed(ice);
 
   const evTotal = evFix + u.years * u.kmPerYear * evKm;

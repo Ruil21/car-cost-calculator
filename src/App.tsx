@@ -4,7 +4,7 @@ import { REGIONS, PROFILES, pricesOf, type Prices } from './data/regions';
 import './App.css';
 
 const DEFAULTS = {
-  km: 15000, hw: 40, years: 6, home: 80, fast: 30,
+  km: 15000, hw: 40, years: 6, home: 80, fast: 30, wb: 1200, wbInc: 0,
   evHw: 30, evLoss: 15, iceUp: 10,
   evP: 38000, evI: 0, evC: 16.5, evR: 50, evM: 350, evS: 700, evT: 0,
   icP: 28000, icC: 5.8, icR: 48, icM: 650, icS: 600, icT: 150,
@@ -34,16 +34,23 @@ export default function App() {
   const [offPeak, setOffPeak] = useState(false);
   const [custom, setCustom] = useState(false);
   const [fuelType, setFuelType] = useState<'petrol' | 'diesel'>('petrol');
+  const [kvaNow, setKvaNow] = useState('6.9');
+  const [kvaEv, setKvaEv] = useState('10.35');
 
   const info = REGIONS[region];
+  const kvaOptions = Object.keys(info.power).sort((a, b) => parseFloat(a) - parseFloat(b));
   const homePrice = offPeak ? prices.offPeak : prices.home;
   const publicPrice = (1 - v.fast / 100) * prices.ac + (v.fast / 100) * prices.dc;
+
+  const wallbox = hasHome ? Math.max(0, v.wb - v.wbInc) : 0;
+  const extraPerYear = hasHome ? Math.max(0, ((info.power[kvaEv] ?? 0) - (info.power[kvaNow] ?? 0)) * 365) : 0;
+  const setupTotal = wallbox + extraPerYear * Math.max(1, v.years);
 
   const r = compare(
     { kmPerYear: v.km, highwayShare: v.hw / 100, homeChargeShare: hasHome ? v.home / 100 : 0, years: Math.max(1, v.years) },
     { fuelPerL: prices[fuelType], homeKwh: homePrice, publicKwh: publicPrice },
     { evHighwayUplift: v.evHw / 100, evLoss: v.evLoss / 100, iceUplift: v.iceUp / 100 },
-    { price: v.evP, incentive: v.evI, kwhPer100: v.evC, resale: v.evR / 100, maintenance: v.evM, insurance: v.evS, tax: v.evT },
+    { price: v.evP, incentive: v.evI, kwhPer100: v.evC, resale: v.evR / 100, maintenance: v.evM, insurance: v.evS, tax: v.evT, wallbox, extraFixedPerYear: extraPerYear },
     { price: v.icP, lPer100: v.icC, resale: v.icR / 100, maintenance: v.icM, insurance: v.icS, tax: v.icT },
   );
 
@@ -57,12 +64,18 @@ export default function App() {
     <input type="number" step="any" value={val} onChange={(e) => set(e.target.valueAsNumber || 0)} />
   );
 
+  const kvaSelect = (val: string, set: (s: string) => void) => (
+    <select value={val} onChange={(e) => set(e.target.value)}>
+      {kvaOptions.map((k) => <option key={k} value={k}>{k} kVA</option>)}
+    </select>
+  );
+
   return (
     <main>
       <h1>⚡ EV vs Combustion: what will it really cost?</h1>
 
       <section className="results">
-        <div className="card"><h2>Electric</h2><p className="big ev">{eur(r.evTotal)}</p><p className="sub">{(r.evKm * 100).toFixed(1)} € / 100 km</p></div>
+        <div className="card"><h2>Electric</h2><p className="big ev">{eur(r.evTotal)}</p><p className="sub">{(r.evKm * 100).toFixed(1)} € / 100 km{setupTotal > 0 ? ` · incl. ${eur(setupTotal)} home setup` : ''}</p></div>
         <div className="card"><h2>Combustion</h2><p className="big ice">{eur(r.iceTotal)}</p><p className="sub">{(r.iceKm * 100).toFixed(1)} € / 100 km</p></div>
         <div className="card"><h2>Verdict</h2><p className="big">{winner} by {eur(Math.abs(r.difference))}</p></div>
         <div className="card"><h2>Break-even</h2><p className="big">{be}</p></div>
@@ -111,6 +124,13 @@ export default function App() {
             <label className="check"><input type="checkbox" checked={offPeak} onChange={(e) => setOffPeak(e.target.checked)} /> I charge mostly overnight on an off-peak / bi-hourly tariff</label>
             <label>Share of public charging that is fast (DC) <span>{num(v.fast, (n) => setV({ ...v, fast: Math.min(100, n) }))} %</span></label>
             <p className="sub">Home electricity: {homePrice.toFixed(2)} €/kWh · public: {publicPrice.toFixed(2)} €/kWh</p>
+
+            <p className="q">Home charging setup</p>
+            <label>Wallbox + installation <span>{num(v.wb, (n) => setV({ ...v, wb: n }))} €</span></label>
+            <label>Wallbox incentive / subsidy <span>{num(v.wbInc, (n) => setV({ ...v, wbInc: n }))} €</span></label>
+            <label>Contracted power today {kvaSelect(kvaNow, setKvaNow)}</label>
+            <label>Contracted power with EV {kvaSelect(kvaEv, setKvaEv)}</label>
+            <p className="sub">Extra fixed electricity cost: {eur(extraPerYear)} / year. Set the wallbox cost to 0 if you already have a charging point. A 7.4 kW wallbox typically needs about 10.35 kVA.</p>
           </>
         ) : (
           <>

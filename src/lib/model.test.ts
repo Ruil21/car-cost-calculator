@@ -32,3 +32,17 @@ describe('compare', () => {
     expect(hwy.realKwh).toBeGreaterThan(city.realKwh);
   });
 });
+
+describe('home charging setup', () => {
+  it('wallbox adds its cost to the EV total', () => {
+    const base = compare(usage, prices, a, ev, ice);
+    const withWb = compare(usage, prices, a, { ...ev, wallbox: 1200 }, ice);
+    expect(withWb.evTotal - base.evTotal).toBeCloseTo(1200);
+  });
+
+  it('extra contracted power cost scales with the ownership period', () => {
+    const base = compare(usage, prices, a, ev, ice);
+    const withPower = compare(usage, prices, a, { ...ev, extraFixedPerYear: 78 }, ice);
+    expect(withPower.evTotal - base.evTotal).toBeCloseTo(78 * usage.years);
+  });
+});

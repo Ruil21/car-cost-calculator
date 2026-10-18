@@ -1,7 +1,7 @@
 import data from './prices.json';
 
 export interface Prices { petrol: number; diesel: number; home: number; offPeak: number; ac: number; dc: number }
-export interface Region extends Prices { name: string; updated: string; sources: string[] }
+export interface Region extends Prices { name: string; updated: string; sources: string[]; power: Record<string, number> }
 
 export const REGIONS = data as Record<string, Region>;
 
