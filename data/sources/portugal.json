@@ -3,9 +3,9 @@
   "updated": "2026-10-18",
   "vat": 0.23,
   "fuel": {
-    "petrol95": 2.11,
-    "diesel": 2.15,
-    "source": "DGEG average pump prices, week of 12-18 Oct 2026 (precoscombustiveis.dgeg.gov.pt)"
+    "petrol95": 2.115,
+    "diesel": 2.144,
+    "source": "DGEG daily national average (includes standard station discounts), 2026-10-17"
   },
   "electricity": {
     "simple": 0.1654,
@@ -14,7 +14,16 @@
     "source": "ERSE regulated tariff BTN 2026 (before VAT) plus 1 Oct 2026 energy update (assumed same for all periods)"
   },
   "contractedPower": {
-    "daily": { "3.45": 0.1917, "4.6": 0.2499, "5.75": 0.3079, "6.9": 0.3659, "10.35": 0.5397, "13.8": 0.7136, "17.25": 0.8875, "20.7": 1.0614 },
+    "daily": {
+      "3.45": 0.1917,
+      "4.6": 0.2499,
+      "5.75": 0.3079,
+      "6.9": 0.3659,
+      "10.35": 0.5397,
+      "13.8": 0.7136,
+      "17.25": 0.8875,
+      "20.7": 1.0614
+    },
     "source": "ERSE regulated tariff, contracted power in EUR/day before VAT (VAT rate on this term may differ for small contracts)"
   },
   "publicCharging": {

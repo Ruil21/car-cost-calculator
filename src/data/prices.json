@@ -3,13 +3,13 @@
     "name": "Portugal",
     "updated": "2026-10-18",
     "sources": [
-      "DGEG average pump prices, week of 12-18 Oct 2026 (precoscombustiveis.dgeg.gov.pt)",
+      "DGEG daily national average (includes standard station discounts), 2026-10-17",
       "ERSE regulated tariff BTN 2026 (before VAT) plus 1 Oct 2026 energy update (assumed same for all periods)",
       "ERSE regulated tariff, contracted power in EUR/day before VAT (VAT rate on this term may differ for small contracts)",
       "Estimates: midpoint of typical AC range 0.30-0.45; DC fast median 0.65 (Eleport, Feb 2026). Varies a lot by operator"
     ],
-    "petrol": 2.11,
-    "diesel": 2.15,
+    "petrol": 2.115,
+    "diesel": 2.144,
     "home": 0.21,
     "offPeak": 0.14,
     "ac": 0.38,

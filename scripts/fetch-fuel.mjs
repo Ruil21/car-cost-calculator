@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 const FILE = 'data/sources/portugal.json';
 // 'PrecoMedio' = average incl. standard discounts; 'PrecoMedioSDesc' = pump price before discounts
 const FIELD = 'PrecoMedio';
-const FUELS = { petrol95: 'Gasolina simples 95', diesel: 'Gasóleo simples' };
+// \u00f3 is the accented o in "Gasoleo" (kept as an escape so the file stays plain ASCII)
+const FUELS = { petrol95: 'Gasolina simples 95', diesel: 'Gas\u00f3leo simples' };
 
 const iso = (d) => d.toISOString().slice(0, 10);
 const end = new Date();
@@ -24,15 +25,18 @@ if (!res.ok) throw new Error(`DGEG request failed: ${res.status}`);
 const body = await res.json();
 if (!body.status || !Array.isArray(body.resultado)) throw new Error('Unexpected DGEG response shape');
 
-// "2,144 €" -> 2.144
-const toNumber = (s) => parseFloat(String(s).replace('€', '').replace(',', '.'));
+// "2,144 <euro sign>" -> 2.144 (keep only digits and the decimal comma)
+const toNumber = (s) => parseFloat(String(s).replace(/[^\d,]/g, '').replace(',', '.'));
 
 const latest = {};
 for (const [key, name] of Object.entries(FUELS)) {
   const rows = body.resultado
     .filter((r) => r.TipoCombustivel === name)
     .sort((a, b) => b.Data.localeCompare(a.Data));
-  if (!rows.length) throw new Error(`No rows for ${name}`);
+  if (!rows.length) {
+    const seen = [...new Set(body.resultado.map((r) => r.TipoCombustivel))].join(', ');
+    throw new Error(`No rows for ${name}. Fuel types in response: ${seen}`);
+  }
   const price = toNumber(rows[0][FIELD]);
   const ageDays = (Date.now() - new Date(rows[0].Data).getTime()) / 86400000;
   if (!Number.isFinite(price) || price < 0.8 || price > 3.5) throw new Error(`Suspicious ${name} price: ${price}`);
