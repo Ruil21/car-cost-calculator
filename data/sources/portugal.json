@@ -1,11 +1,11 @@
 {
   "name": "Portugal",
-  "updated": "2026-11-02",
+  "updated": "2026-11-09",
   "vat": 0.23,
   "fuel": {
-    "petrol95": 2.029,
-    "diesel": 2.189,
-    "source": "DGEG daily national average (includes standard station discounts), 2026-11-01"
+    "petrol95": 1.996,
+    "diesel": 2.202,
+    "source": "DGEG daily national average (includes standard station discounts), 2026-11-08"
   },
   "electricity": {
     "simple": 0.1654,
